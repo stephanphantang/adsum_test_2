@@ -1,7 +1,6 @@
 #In this file, we realize the first test to get used with fastAPI
 #import all the needed module
 import streamlit as st
-import pandas as pd
 import requests
 import json
 

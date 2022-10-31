@@ -1,7 +1,6 @@
 #In this file, we realize the first test to get used with fastAPI
 #import all the needed module
 from fastapi import FastAPI
-from enum import Enum
 from pydantic import BaseModel
 
 #we create here a class Patient, for now it contains name and symptoms.
