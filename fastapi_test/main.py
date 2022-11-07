@@ -2,6 +2,11 @@
 #import all the needed module
 from fastapi import FastAPI
 from pydantic import BaseModel
+import pickle
+
+#We load here the machine learning model of ADSUM, it is a random forest classifier with a Bayes optimization.
+#This model will predict a disease based on a given list of symptoms
+loaded_model = pickle.load(open("adsum_model.sav", 'rb'))
 
 #we create here a class Patient, for now it contains name and symptoms.
 #In future,name should be replace by a numerical id and add a disease part
@@ -13,7 +18,7 @@ class Patient(BaseModel):
 #call the function fastAPI
 app = FastAPI()
 
-#înstantiate a temporary patient database for the test
+#instantiate a temporary patient database for the test
 patient_db ={
     'jack': {"patient_id": 'jack', "symptom": "fever"},
     'jill': {"patient_id": 'jill', "symptom": "scratch"},
@@ -37,3 +42,4 @@ def create_patient(patient: Patient):
     patient_id= patient.patient_id
     patient_db[patient_id]=patient.dict()
     return {'message': f'Successfully created patient: {patient_id}'}
+
