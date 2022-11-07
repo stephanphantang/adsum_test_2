@@ -3,26 +3,31 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import pickle
+from typing import List
+import pandas as pd
 
 #We load here the machine learning model of ADSUM, it is a random forest classifier with a Bayes optimization.
 #This model will predict a disease based on a given list of symptoms
 loaded_model = pickle.load(open("adsum_model.sav", 'rb'))
+
+#We load here the list of symptom taken in account by the model
+list_of_symptom = pickle.load(open("list_symptoms.sav","rb"))
 
 #we create here a class Patient, for now it contains name and symptoms.
 #In future,name should be replace by a numerical id and add a disease part
 #Moreover, symptom should be a list for next time
 class Patient(BaseModel):
     patient_id: str
-    symptom: str
+    symptom: List[str]
 
 #call the function fastAPI
 app = FastAPI()
 
 #instantiate a temporary patient database for the test
 patient_db ={
-    'jack': {"patient_id": 'jack', "symptom": "fever"},
-    'jill': {"patient_id": 'jill', "symptom": "scratch"},
-    'jane': {"patient_id": 'jane', "symptom": "vomiting"}
+    'jack': {"patient_id": 'jack', "symptom": [" fever"]},
+    'jill': {"patient_id": 'jill', "symptom": [" scratch"]},
+    'jane': {"patient_id": 'jane', "symptom": [" vomiting"]}
     }
 
 #this function is to obtain the patient database
@@ -43,3 +48,22 @@ def create_patient(patient: Patient):
     patient_db[patient_id]=patient.dict()
     return {'message': f'Successfully created patient: {patient_id}'}
 
+#this function aim to convert the list of symptoms into a one hot encoding table processable for the model
+def treat_patient(symptom_list, table_symptom):
+    my_zero_list= [0]*len(table_symptom.columns)
+    table_symptom=table_symptom.append(pd.Series(my_zero_list,index=table_symptom.columns), ignore_index=True)
+    for symptom in symptom_list:
+        if symptom in table_symptom.columns:
+            table_symptom.at[0,symptom]=1
+        elif " "+symptom in table_symptom.columns:
+            table_symptom.at[0," "+symptom]=1
+    return table_symptom
+
+
+#This function will predict the disease of a given patient
+@app.get("/patients/{patient_id}/predict")
+def predict_patient_disease(patient: Patient):
+    symptoms= patient.symptom
+    empty_symptom_table= pd.DataFrame(columns=list_of_symptom)
+    ohe_symptom_list= treat_patient(symptoms,empty_symptom_table)
+    return loaded_model.predict(ohe_symptom_list)[0]
