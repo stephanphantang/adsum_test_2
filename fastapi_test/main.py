@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import pickle
 from typing import List
 import pandas as pd
+import numpy as np
 
 #We load here the machine learning model of ADSUM, it is a random forest classifier with a Bayes optimization.
 #This model will predict a disease based on a given list of symptoms
@@ -59,6 +60,13 @@ def treat_patient(symptom_list, table_symptom):
             table_symptom.at[0," "+symptom]=1
     return table_symptom
 
+#this function is for displaying the most probable class predicted and their probabilities (3 most probable for now)
+def display_max(class_list, proba_list):
+    sorted_proba= sorted(proba_list,reverse=True)
+    most_proba_id= proba_list.index(sorted_proba[0])
+    sec_proba_id= proba_list.index(sorted_proba[1])
+    third_proba_id= proba_list.index(sorted_proba[2])
+    return [(class_list[most_proba_id],sorted_proba[0]),(class_list[sec_proba_id],sorted_proba[1]),(class_list[third_proba_id],sorted_proba[2])]
 
 #This function will predict the disease of a given patient
 @app.get("/patients/{patient_id}/predict")
@@ -66,4 +74,5 @@ def predict_patient_disease(patient: Patient):
     symptoms= patient.symptom
     empty_symptom_table= pd.DataFrame(columns=list_of_symptom)
     ohe_symptom_list= treat_patient(symptoms,empty_symptom_table)
-    return loaded_model.predict(ohe_symptom_list)[0]
+    return display_max(loaded_model.classes_.tolist(), loaded_model.predict_proba(ohe_symptom_list).tolist()[0])
+
