@@ -7,6 +7,7 @@ from typing import List
 import pandas as pd
 import numpy as np
 
+
 #We load here the machine learning model of ADSUM, it is a random forest classifier with a Bayes optimization.
 #This model will predict a disease based on a given list of symptoms
 loaded_model = pickle.load(open("adsum_model.sav", 'rb'))
@@ -75,4 +76,5 @@ def predict_patient_disease(patient: Patient):
     empty_symptom_table= pd.DataFrame(columns=list_of_symptom)
     ohe_symptom_list= treat_patient(symptoms,empty_symptom_table)
     return display_max(loaded_model.classes_.tolist(), loaded_model.predict_proba(ohe_symptom_list).tolist()[0])
+
 
