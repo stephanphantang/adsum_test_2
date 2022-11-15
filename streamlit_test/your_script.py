@@ -38,3 +38,5 @@ predicted_patient ={"patient_id": patient_predict_id ,"symptom": symptoms_to_pre
 if st.button("display the predicted disease"):
     patient_predicted_disease = requests.get('http://127.0.0.1:8000/patients/{patient_id}/predict', data= json.dumps(predicted_patient))
     st.write(patient_predicted_disease.text)
+
+#just add a comment
