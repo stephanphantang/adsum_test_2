@@ -77,4 +77,4 @@ def predict_patient_disease(patient: Patient):
     ohe_symptom_list= treat_patient(symptoms,empty_symptom_table)
     return display_max(loaded_model.classes_.tolist(), loaded_model.predict_proba(ohe_symptom_list).tolist()[0])
 
-
+#Maxence was here
