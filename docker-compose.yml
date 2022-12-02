@@ -1,17 +1,17 @@
-version: "3.8"
+version: "3.9"
 
 services:
   frontend:
-    build: frontimage
+    build: adsum_frontend
     ports:
-      - 8501:8501
+      - 8080:8080
     depends_on:
       - backend
     volumes:
         - ./storage:/storage
 
   backend:
-    build: backimage
+    build: adsum_backend
     ports:
       - 8000:8000
     volumes:

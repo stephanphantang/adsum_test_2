@@ -6,7 +6,7 @@ import pickle
 from typing import List
 import pandas as pd
 import numpy as np
-
+from sklearn.ensemble import RandomForestClassifier
 
 #We load here the machine learning model of ADSUM, it is a random forest classifier with a Bayes optimization.
 #This model will predict a disease based on a given list of symptoms
